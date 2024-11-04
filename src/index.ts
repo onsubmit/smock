@@ -9,8 +9,8 @@ function fn<TIn extends unknown[], TOut>(
   const mockFn: MockFunction<TIn, TOut> = Object.assign(
     function (this: MockFunction<TIn, TOut>, ...args: TIn) {
       mockFn.mock.calls.push(args);
-      mockFn.mock.instances.push(this);
       mockFn.mock.contexts.push(this);
+      mockFn.mock.instances.push(this);
 
       const result = (mockImplementations.shift() ?? mockImplementation ?? callback)?.(...args);
       mockFn.mock.results.push(result);
@@ -19,9 +19,9 @@ function fn<TIn extends unknown[], TOut>(
     {
       mock: {
         calls: [],
-        results: [],
-        instances: [],
         contexts: [],
+        instances: [],
+        results: [],
       },
       mockImplementation: (callback: (...args: TIn) => TOut | undefined) => {
         mockImplementation = callback;
