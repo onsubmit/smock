@@ -1,6 +1,9 @@
-export type MockFunction = {
+export type MockFunctionConstructor = {
   new (): MockFunction;
-  (...args: any[]): unknown;
+  (...args: any[]): void;
+};
+
+export type MockFunction = MockFunctionConstructor & {
   mock: {
     calls: Array<unknown[]>;
     results: unknown[];
