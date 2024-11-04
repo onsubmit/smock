@@ -29,6 +29,16 @@ function fn<TIn extends unknown[], TOut>(
     } as MockFunctionConstructor<TIn, TOut>,
     {
       mock: mockInitialValue,
+      mockClear: () => {
+        const { mock } = mockFn;
+
+        mock.calls.length = 0;
+        mock.contexts.length = 0;
+        mock.instances.length = 0;
+        mock.results.length = 0;
+
+        return mockFn;
+      },
       mockImplementation: (callback: (...args: TIn) => TOut | undefined) => {
         mockImplementation = callback;
       },
