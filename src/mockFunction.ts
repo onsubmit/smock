@@ -5,7 +5,7 @@ export type MockFunctionConstructor<TIn extends unknown[], TOut> = {
 
 export type MockFunction<TIn extends unknown[], TOut> = MockFunctionConstructor<TIn, TOut> & {
   mock: {
-    calls: Array<unknown[]>;
+    calls: Array<TIn>;
     results: Array<TOut | undefined>;
     instances: MockFunction<TIn, TOut>[];
     contexts: unknown[];
