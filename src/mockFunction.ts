@@ -13,6 +13,7 @@ export interface MockFunction<TIn extends unknown[], TOut>
     results: Array<TOut | undefined>;
   };
   mockClear(): this;
-  mockImplementation: (callback: (...args: TIn) => TOut | undefined) => void;
-  mockImplementationOnce: (callback: (...args: TIn) => TOut | undefined) => this;
+  mockImplementation: (callback: (...args: TIn) => TOut) => void;
+  mockImplementationOnce: (callback: (...args: TIn) => TOut) => this;
+  mockReset(): this;
 }

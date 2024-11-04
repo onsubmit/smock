@@ -3,7 +3,7 @@ import { MockFunction, MockFunctionConstructor } from './mockFunction.js';
 function fn<TIn extends unknown[], TOut>(
   callback?: (...args: TIn) => TOut | undefined,
 ): MockFunction<TIn, TOut> {
-  let mockImplementation: (...args: TIn) => TOut | undefined;
+  let mockImplementation: ((...args: TIn) => TOut) | undefined;
   const mockImplementations: Array<(...args: TIn) => TOut | undefined> = [];
 
   const mockInitialValue: MockFunction<TIn, TOut>['mock'] = {
@@ -39,14 +39,18 @@ function fn<TIn extends unknown[], TOut>(
 
         return mockFn;
       },
-      mockImplementation: (callback: (...args: TIn) => TOut | undefined) => {
+      mockImplementation: (callback: (...args: TIn) => TOut) => {
         mockImplementation = callback;
       },
-      mockImplementationOnce: (
-        callback: (...args: TIn) => TOut | undefined,
-      ): MockFunction<TIn, TOut> => {
+      mockImplementationOnce: (callback: (...args: TIn) => TOut): MockFunction<TIn, TOut> => {
         mockImplementations.push(callback);
         return mockFn;
+      },
+      mockReset: () => {
+        mockImplementation = undefined;
+        mockImplementations.length = 0;
+
+        return mockFn.mockClear();
       },
     },
   );
