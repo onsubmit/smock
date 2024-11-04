@@ -6,6 +6,14 @@ function fn<TIn extends unknown[], TOut>(
   let mockImplementation: (...args: TIn) => TOut | undefined;
   const mockImplementations: Array<(...args: TIn) => TOut | undefined> = [];
 
+  const mockInitialValue: MockFunction<TIn, TOut>['mock'] = {
+    calls: [],
+    contexts: [],
+    instances: [],
+    lastCall: undefined,
+    results: [],
+  };
+
   const mockFn: MockFunction<TIn, TOut> = Object.assign(
     function (this: MockFunction<TIn, TOut>, ...args: TIn) {
       const { mock } = mockFn;
@@ -20,13 +28,7 @@ function fn<TIn extends unknown[], TOut>(
       return result;
     } as MockFunctionConstructor<TIn, TOut>,
     {
-      mock: {
-        calls: [],
-        contexts: [],
-        instances: [],
-        lastCall: undefined,
-        results: [],
-      },
+      mock: mockInitialValue,
       mockImplementation: (callback: (...args: TIn) => TOut | undefined) => {
         mockImplementation = callback;
       },
