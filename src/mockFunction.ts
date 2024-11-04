@@ -1,15 +1,15 @@
-export type MockFunctionConstructor<T> = {
-  new (): MockFunction<T>;
-  (...args: any[]): T;
+export type MockFunctionConstructor<TIn extends unknown[], TOut> = {
+  new (): MockFunction<TIn, TOut>;
+  (...args: TIn): TOut;
 };
 
-export type MockFunction<T> = MockFunctionConstructor<T> & {
+export type MockFunction<TIn extends unknown[], TOut> = MockFunctionConstructor<TIn, TOut> & {
   mock: {
     calls: Array<unknown[]>;
-    results: Array<T | undefined>;
-    instances: MockFunction<T>[];
+    results: Array<TOut | undefined>;
+    instances: MockFunction<TIn, TOut>[];
     contexts: unknown[];
   };
-  mockImplementation: (callback: (...args: any[]) => T | undefined) => void;
-  mockImplementationOnce: (callback: (...args: any[]) => T | undefined) => MockFunction<T>;
+  mockImplementation: (callback: (...args: TIn) => TOut | undefined) => void;
+  mockImplementationOnce: (callback: (...args: TIn) => TOut | undefined) => MockFunction<TIn, TOut>;
 };
