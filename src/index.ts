@@ -1,11 +1,11 @@
 import { MockFunction, MockFunctionConstructor } from './mockFunction.js';
 
-function fn(callback?: (...args: any[]) => unknown): MockFunction {
-  let mockImplementation: (...args: any[]) => unknown | undefined;
-  const mockImplementations: Array<(...args: any[]) => unknown> = [];
+function fn<T>(callback?: (...args: any[]) => T | undefined): MockFunction<T> {
+  let mockImplementation: (...args: any[]) => T | undefined;
+  const mockImplementations: Array<(...args: any[]) => T | undefined> = [];
 
-  const mockFn: MockFunction = Object.assign(
-    function (this: MockFunction, ...args: any[]) {
+  const mockFn: MockFunction<T> = Object.assign(
+    function (this: MockFunction<T>, ...args: any[]) {
       mockFn.mock.calls.push(args);
       mockFn.mock.instances.push(this);
       mockFn.mock.contexts.push(this);
@@ -13,7 +13,7 @@ function fn(callback?: (...args: any[]) => unknown): MockFunction {
       const result = (mockImplementations.shift() ?? mockImplementation ?? callback)?.(...args);
       mockFn.mock.results.push(result);
       return result;
-    } as MockFunctionConstructor,
+    } as MockFunctionConstructor<T>,
     {
       mock: {
         calls: [],
@@ -21,10 +21,10 @@ function fn(callback?: (...args: any[]) => unknown): MockFunction {
         instances: [],
         contexts: [],
       },
-      mockImplementation: (callback: (...args: any[]) => unknown) => {
+      mockImplementation: (callback: (...args: any[]) => T | undefined) => {
         mockImplementation = callback;
       },
-      mockImplementationOnce: (callback: (...args: any[]) => unknown): MockFunction => {
+      mockImplementationOnce: (callback: (...args: any[]) => T | undefined): MockFunction<T> => {
         mockImplementations.push(callback);
         return mockFn;
       },
