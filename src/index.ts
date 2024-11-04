@@ -3,8 +3,8 @@ import { MockFunction, MockFunctionConstructor } from './mockFunction.js';
 function fn<TIn extends unknown[], TOut>(
   callback?: (...args: TIn) => TOut | undefined,
 ): MockFunction<TIn, TOut> {
-  let mockImplementation: (...args: any[]) => TOut | undefined;
-  const mockImplementations: Array<(...args: any[]) => TOut | undefined> = [];
+  let mockImplementation: (...args: TIn) => TOut | undefined;
+  const mockImplementations: Array<(...args: TIn) => TOut | undefined> = [];
 
   const mockFn: MockFunction<TIn, TOut> = Object.assign(
     function (this: MockFunction<TIn, TOut>, ...args: TIn) {
