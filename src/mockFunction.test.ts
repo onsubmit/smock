@@ -13,11 +13,16 @@ describe('mockFunction', () => {
 
     [1, 2, 3, 4].forEach((x) => mockFn(x));
 
-    expect(mockFn.mock.calls).toHaveLength(4);
     expect(mockFn.mock.calls).toEqual([[1], [2], [3], [4]]);
-
-    expect(mockFn.mock.results).toHaveLength(4);
     expect(mockFn.mock.results).toEqual([2, 4, 6, 8]);
+  });
+
+  it('should track last call', () => {
+    const mockFn = smock.fn((x: number) => x * 2);
+    expect(mockFn.mock.lastCall).toBeUndefined();
+
+    [1, 2, 3, 4].forEach((x) => mockFn(x));
+    expect(mockFn.mock.lastCall).toEqual([4]);
   });
 
   it('should capture instances', () => {
@@ -25,7 +30,6 @@ describe('mockFunction', () => {
     const instance1 = new mockFn();
     const instance2 = new mockFn();
 
-    expect(mockFn.mock.instances).toHaveLength(2);
     expect(mockFn.mock.instances).toEqual([instance1, instance2]);
   });
 
@@ -40,10 +44,7 @@ describe('mockFunction', () => {
     mockFn.call(thisContext2, 'call');
     mockFn.apply(thisContext3, ['apply']);
 
-    expect(mockFn.mock.contexts).toHaveLength(3);
     expect(mockFn.mock.contexts).toEqual([thisContext1, thisContext2, thisContext3]);
-
-    expect(mockFn.mock.calls).toHaveLength(3);
     expect(mockFn.mock.calls).toEqual([['bind'], ['call'], ['apply']]);
   });
 

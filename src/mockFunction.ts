@@ -8,6 +8,7 @@ export type MockFunction<TIn extends unknown[], TOut> = MockFunctionConstructor<
     calls: Array<TIn>;
     contexts: unknown[];
     instances: MockFunction<TIn, TOut>[];
+    lastCall: TIn | undefined;
     results: Array<TOut | undefined>;
   };
   mockImplementation: (callback: (...args: TIn) => TOut | undefined) => void;
