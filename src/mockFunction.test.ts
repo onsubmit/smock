@@ -11,10 +11,15 @@ describe('mockFunction', () => {
   it('should track calls and results', () => {
     const mockFn = smock.fn((x: number) => x * 2);
 
+    expect(mockFn.mock.called).toBe(false);
+    expect(mockFn.mock.callCount).toBe(0);
+
     [1, 2, 3, 4].forEach((x) => mockFn(x));
 
+    expect(mockFn.mock.called).toBe(true);
+    expect(mockFn.mock.callCount).toBe(4);
     expect(mockFn.mock.calls).toEqual([[1], [2], [3], [4]]);
-    expect(mockFn.mock.results).toEqual([2, 4, 6, 8]);
+    expect(mockFn.mock.returns).toEqual([2, 4, 6, 8]);
   });
 
   it('should clear/reset calls and results', () => {
@@ -23,15 +28,19 @@ describe('mockFunction', () => {
 
       [1, 2, 3, 4].forEach((x) => mockFn(x));
       expect(mockFn.mock.calls).toEqual([[1], [2], [3], [4]]);
-      expect(mockFn.mock.results).toEqual([2, 4, 6, 8]);
+      expect(mockFn.mock.returns).toEqual([2, 4, 6, 8]);
 
       mockFn[f]();
+      expect(mockFn.mock.called).toBe(false);
+      expect(mockFn.mock.callCount).toBe(0);
       expect(mockFn.mock.calls).toHaveLength(0);
-      expect(mockFn.mock.results).toHaveLength(0);
+      expect(mockFn.mock.returns).toHaveLength(0);
 
       [5, 6, 7, 8].forEach((x) => mockFn(x));
+      expect(mockFn.mock.called).toBe(true);
+      expect(mockFn.mock.callCount).toBe(4);
       expect(mockFn.mock.calls).toEqual([[5], [6], [7], [8]]);
-      expect(mockFn.mock.results).toEqual([10, 12, 14, 16]);
+      expect(mockFn.mock.returns).toEqual([10, 12, 14, 16]);
     }
   });
 
