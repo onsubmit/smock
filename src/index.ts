@@ -1,12 +1,10 @@
-import { MockFunction, MockFunctionConstructor } from './mockFunction.js';
+import { Func, MockFunction, MockFunctionConstructor, NormalizedFunc } from './mockFunction.js';
 
-function fn<TIn extends unknown[], TOut>(
-  callback?: (...args: TIn) => TOut | undefined,
-): MockFunction<TIn, TOut> {
-  let mockImplementation: ((...args: TIn) => TOut) | undefined;
-  const mockImplementations: Array<(...args: TIn) => TOut | undefined> = [];
+function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
+  let mockImplementation: NormalizedFunc<TFunc> | undefined;
+  const mockImplementations: Array<NormalizedFunc<TFunc> | undefined> = [];
 
-  const mockInitialValue: MockFunction<TIn, TOut>['mock'] = {
+  const mockInitialValue: MockFunction<TFunc>['mock'] = {
     calls: [],
     contexts: [],
     instances: [],
@@ -14,8 +12,8 @@ function fn<TIn extends unknown[], TOut>(
     results: [],
   };
 
-  const mockFn: MockFunction<TIn, TOut> = Object.assign(
-    function (this: MockFunction<TIn, TOut>, ...args: TIn) {
+  const mockFn: MockFunction<TFunc> = Object.assign(
+    function (this: MockFunction<TFunc>, ...args: Parameters<TFunc>) {
       const { mock } = mockFn;
 
       mock.calls.push(args);
@@ -26,7 +24,7 @@ function fn<TIn extends unknown[], TOut>(
       const result = (mockImplementations.shift() ?? mockImplementation ?? callback)?.(...args);
       mock.results.push(result);
       return result;
-    } as MockFunctionConstructor<TIn, TOut>,
+    } as MockFunctionConstructor<TFunc>,
     {
       mock: mockInitialValue,
       mockClear: () => {
@@ -39,10 +37,10 @@ function fn<TIn extends unknown[], TOut>(
 
         return mockFn;
       },
-      mockImplementation: (callback: (...args: TIn) => TOut) => {
+      mockImplementation: (callback: NormalizedFunc<TFunc>) => {
         mockImplementation = callback;
       },
-      mockImplementationOnce: (callback: (...args: TIn) => TOut): MockFunction<TIn, TOut> => {
+      mockImplementationOnce: (callback: NormalizedFunc<TFunc>): MockFunction<TFunc> => {
         mockImplementations.push(callback);
         return mockFn;
       },
@@ -52,7 +50,7 @@ function fn<TIn extends unknown[], TOut>(
 
         return mockFn.mockClear();
       },
-      mockReturnValue: (value: TOut) => {
+      mockReturnValue: (value: ReturnType<TFunc>) => {
         mockFn.mockImplementation(() => value);
       },
     },
