@@ -215,4 +215,16 @@ describe('mockFunction', () => {
     expect(await mockFnAsync(0)).toBe(52);
     expect(await mockFnAsync(1)).toBe(52);
   });
+
+  it('should override the resolved value once', async () => {
+    const mockFnAsync = smock
+      .fn(() => Promise.resolve('default'))
+      .mockResolvedValueOnce('1st')
+      .mockResolvedValueOnce('2nd');
+
+    expect(await mockFnAsync()).toBe('1st');
+    expect(await mockFnAsync()).toBe('2nd');
+    expect(await mockFnAsync()).toBe('default');
+    expect(await mockFnAsync()).toBe('default');
+  });
 });

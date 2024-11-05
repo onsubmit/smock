@@ -24,4 +24,5 @@ export interface MockFunction<TFunc extends Func = Func> extends MockFunctionCon
   mockReturnValue(value: ReturnType<TFunc>): this;
   mockReturnValueOnce(value: ReturnType<TFunc>): this;
   mockResolvedValue(value: Awaited<ReturnType<TFunc>>): this;
+  mockResolvedValueOnce(value: Awaited<ReturnType<TFunc>>): this;
 }

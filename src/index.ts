@@ -60,6 +60,8 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
       mockReturnValueOnce: (value: ReturnType<TFunc>) => mockFn.mockImplementationOnce(() => value),
       mockResolvedValue: (value: Awaited<ReturnType<TFunc>>) =>
         mockFn.mockImplementation(() => Promise.resolve(value) as any),
+      mockResolvedValueOnce: (value: Awaited<ReturnType<TFunc>>) =>
+        mockFn.mockImplementationOnce(() => Promise.resolve(value) as any),
     },
   );
 
