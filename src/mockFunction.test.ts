@@ -135,6 +135,17 @@ describe('mockFunction', () => {
     expect(mockFn(2)).toBe(6);
   });
 
+  it('should override the implementation to return this', () => {
+    const mockFn = smock.fn((x: number) => x * 2);
+
+    const thisContext1 = { context: 1 };
+    const bound = mockFn.bind(thisContext1);
+    mockFn.mockReturnThis();
+
+    expect(bound(4)).toEqual(thisContext1);
+    expect(mockFn.mock.contexts).toEqual([thisContext1]);
+  });
+
   it('should reset the implementation', () => {
     const mockFn = smock.fn((x: number) => x * 2);
     mockFn.mockImplementation((x: number) => x * 3);

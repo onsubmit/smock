@@ -1,6 +1,7 @@
 import { Func, MockFunction, MockFunctionConstructor, NormalizedFunc } from './mockFunction.js';
 
 function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
+  const state: Record<string, any> = {};
   let mockImplementation: NormalizedFunc<TFunc> | undefined;
   const mockImplementations: Array<NormalizedFunc<TFunc> | undefined> = [];
 
@@ -13,12 +14,14 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
   };
 
   const mockFn: MockFunction<TFunc> = Object.assign(
-    function (this: MockFunction<TFunc>, ...args: Parameters<TFunc>) {
+    function (this: MockFunction<TFunc> | unknown, ...args: Parameters<TFunc>) {
       const { mock } = mockFn;
+
+      state.this = this;
 
       mock.calls.push(args);
       mock.contexts.push(this);
-      mock.instances.push(this);
+      mock.instances.push(this as MockFunction<TFunc>);
       mock.lastCall = args;
 
       const result = (mockImplementations.shift() ?? mockImplementation ?? callback)?.(...args);
@@ -27,6 +30,7 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
     } as MockFunctionConstructor<TFunc>,
     {
       mock: mockInitialValue,
+      state: {},
       mockClear: () => {
         const { mock } = mockFn;
 
@@ -49,6 +53,11 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
         mockImplementations.length = 0;
 
         return mockFn.mockClear();
+      },
+      mockReturnThis: () => {
+        mockFn.mockImplementation(() => {
+          return state.this;
+        });
       },
       mockReturnValue: (value: ReturnType<TFunc>) => {
         mockFn.mockImplementation(() => value);
