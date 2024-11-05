@@ -8,8 +8,6 @@ describe('spy', () => {
     spied('a');
 
     expect(spied.called).toBe(true);
-
-    expect(spied.called).toBe(true);
     expect(spied.callCount).toBe(1);
     expect(spied.calls).toEqual([['a']]);
     expect(spied.results).toEqual([{ type: 'success', value: 'a!' }]);
