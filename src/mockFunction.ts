@@ -17,9 +17,9 @@ export interface MockFunction<TFunc extends Func = Func> extends MockFunctionCon
     results: Array<any>;
   };
   mockClear(): this;
-  mockImplementation: (callback: NormalizedFunc<TFunc>) => void;
+  mockImplementation: (callback: NormalizedFunc<TFunc>) => this;
   mockImplementationOnce: (callback: NormalizedFunc<TFunc>) => this;
   mockReset(): this;
-  mockReturnThis(): void;
-  mockReturnValue(value: ReturnType<TFunc>): void;
+  mockReturnThis(): this;
+  mockReturnValue(value: ReturnType<TFunc>): this;
 }

@@ -43,6 +43,7 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
       },
       mockImplementation: (callback: NormalizedFunc<TFunc>) => {
         mockImplementation = callback;
+        return mockFn;
       },
       mockImplementationOnce: (callback: NormalizedFunc<TFunc>): MockFunction<TFunc> => {
         mockImplementations.push(callback);
@@ -54,14 +55,8 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
 
         return mockFn.mockClear();
       },
-      mockReturnThis: () => {
-        mockFn.mockImplementation(() => {
-          return state.this;
-        });
-      },
-      mockReturnValue: (value: ReturnType<TFunc>) => {
-        mockFn.mockImplementation(() => value);
-      },
+      mockReturnThis: () => mockFn.mockImplementation(() => state.this),
+      mockReturnValue: (value: ReturnType<TFunc>) => mockFn.mockImplementation(() => value),
     },
   );
 
