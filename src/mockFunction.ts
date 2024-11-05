@@ -16,4 +16,5 @@ export interface MockFunction<TIn extends unknown[], TOut>
   mockImplementation: (callback: (...args: TIn) => TOut) => void;
   mockImplementationOnce: (callback: (...args: TIn) => TOut) => this;
   mockReset(): this;
+  mockReturnValue(value: TOut): void;
 }

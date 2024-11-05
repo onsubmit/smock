@@ -170,4 +170,15 @@ describe('mockFunction', () => {
     mockFn.mockReset();
     expect(mockFn()).toBe('default');
   });
+
+  it('should override the value', () => {
+    const mockFn = smock.fn((x: number) => 42 + x);
+
+    expect(mockFn(0)).toBe(42);
+    expect(mockFn(1)).toBe(43);
+
+    mockFn.mockReturnValue(52);
+    expect(mockFn(0)).toBe(52);
+    expect(mockFn(1)).toBe(52);
+  });
 });

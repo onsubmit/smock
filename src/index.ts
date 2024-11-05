@@ -52,6 +52,9 @@ function fn<TIn extends unknown[], TOut>(
 
         return mockFn.mockClear();
       },
+      mockReturnValue: (value: TOut) => {
+        mockFn.mockImplementation(() => value);
+      },
     },
   );
 
