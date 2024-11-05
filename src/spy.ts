@@ -59,5 +59,7 @@ export function spy<TFunc extends Func = Func>(fn: TFunc): SpyFunction<TFunc> {
     return returnValue;
   }, spiedInitialValue);
 
+  Object.defineProperty(spied, 'length', { value: fn.length });
+
   return spied;
 }
