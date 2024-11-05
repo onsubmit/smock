@@ -57,6 +57,7 @@ function fn<TFunc extends Func = Func>(callback?: TFunc): MockFunction<TFunc> {
       },
       mockReturnThis: () => mockFn.mockImplementation(() => state.this),
       mockReturnValue: (value: ReturnType<TFunc>) => mockFn.mockImplementation(() => value),
+      mockReturnValueOnce: (value: ReturnType<TFunc>) => mockFn.mockImplementationOnce(() => value),
     },
   );
 

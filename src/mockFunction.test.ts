@@ -192,4 +192,16 @@ describe('mockFunction', () => {
     expect(mockFn(0)).toBe(52);
     expect(mockFn(1)).toBe(52);
   });
+
+  it('should override the value once', () => {
+    const mockFn = smock
+      .fn(() => 'default')
+      .mockReturnValueOnce('1st')
+      .mockReturnValueOnce('2nd');
+
+    expect(mockFn()).toBe('1st');
+    expect(mockFn()).toBe('2nd');
+    expect(mockFn()).toBe('default');
+    expect(mockFn()).toBe('default');
+  });
 });
