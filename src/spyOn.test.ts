@@ -15,5 +15,12 @@ describe('spyOn', () => {
     expect(spy.mock.callCount).toBe(1);
     expect(spy.mock.calls).toEqual([[]]);
     expect(spy.mock.returns).toEqual([1]);
+
+    apples = 2;
+    expect(spy()).toBe(2);
+    expect(spy.mock.called).toBe(true);
+    expect(spy.mock.callCount).toBe(2);
+    expect(spy.mock.calls).toEqual([[], []]);
+    expect(spy.mock.returns).toEqual([1, 2]);
   });
 });

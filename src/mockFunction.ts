@@ -7,7 +7,7 @@ export type ObjectMethods<T> = keyof {
 
 export interface MockFunctionConstructor<TFunc extends Func = Func> {
   new (): MockFunction<TFunc>;
-  (...args: Parameters<TFunc>): any;
+  (...args: Parameters<TFunc>): ReturnType<TFunc>;
 }
 
 export interface MockFunction<TFunc extends Func = Func> extends MockFunctionConstructor<TFunc> {
