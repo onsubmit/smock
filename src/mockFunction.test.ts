@@ -21,6 +21,15 @@ describe('mockFunction', () => {
     expect(() => mockDivideFn(1, 0)).toThrowError('Divide by zero');
   });
 
+  it('should infer types', () => {
+    const add = (a: number, b: number) => a + b;
+    const mockAdd = smock.fn<typeof add>();
+
+    mockAdd.mockImplementation((a, b) => (2 * a + 2 * b) / 2);
+
+    expect(mockAdd(1, 2)).toBe(add(1, 2));
+  });
+
   it('should track calls and results', () => {
     const mockFn = smock.fn((x: number) => x * 2);
 
