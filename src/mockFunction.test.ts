@@ -243,6 +243,18 @@ describe('mockFunction', () => {
     await expect(mockFnAsync).rejects.toThrow('Async error');
   });
 
+  it('should override the rejected value once', async () => {
+    const mockFnAsync = smock
+      .fn(() => Promise.reject(new Error('default')))
+      .mockRejectedValueOnce(new Error('1st'))
+      .mockRejectedValueOnce(new Error('2nd'));
+
+    await expect(mockFnAsync).rejects.toThrow('1st');
+    await expect(mockFnAsync).rejects.toThrow('2nd');
+    await expect(mockFnAsync).rejects.toThrow('default');
+    await expect(mockFnAsync).rejects.toThrow('default');
+  });
+
   it('should override the implementation temporarily', () => {
     const mockFn = smock.fn((x: number) => 42 + x);
 

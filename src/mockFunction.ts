@@ -26,6 +26,7 @@ export interface MockFunction<TFunc extends Func = Func> extends MockFunctionCon
   mockImplementationOnce: (fn: NormalizedFunc<TFunc>) => this;
   mockReset(): this;
   mockRejectedValue(value: any): this;
+  mockRejectedValueOnce(value: any): this;
   mockReturnThis(): this;
   mockReturnValue(value: ReturnType<TFunc>): this;
   mockReturnValueOnce(value: ReturnType<TFunc>): this;
@@ -137,6 +138,10 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
       },
       mockRejectedValue(value: any): MockFunction<TFunc> {
         mockFn.mockImplementation(() => Promise.reject(value) as any);
+        return mockFn;
+      },
+      mockRejectedValueOnce(value: any): MockFunction<TFunc> {
+        mockFn.mockImplementationOnce(() => Promise.reject(value) as any);
         return mockFn;
       },
       mockReturnThis: () => mockFn.mockImplementation(() => _this),
