@@ -136,9 +136,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
         return mockFn.mockClear();
       },
       mockRejectedValue(value: any): MockFunction<TFunc> {
-        mockFn.mockImplementation(() => {
-          throw value;
-        });
+        mockFn.mockImplementation(() => Promise.reject(value) as any);
         return mockFn;
       },
       mockReturnThis: () => mockFn.mockImplementation(() => _this),

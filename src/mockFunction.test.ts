@@ -238,12 +238,9 @@ describe('mockFunction', () => {
   });
 
   it('should override the rejected value', async () => {
-    const error = new Error('Async error');
-    const mockFnAsync = smock.fn().mockRejectedValue(error);
+    const mockFnAsync = smock.fn().mockRejectedValue(new Error('Async error'));
 
-    await mockFnAsync();
-
-    expect(mockFnAsync.mock.results).toEqual([{ type: 'exception', value: error }]);
+    await expect(mockFnAsync).rejects.toThrow('Async error');
   });
 
   it('should override the implementation temporarily', () => {
