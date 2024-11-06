@@ -236,4 +236,17 @@ describe('mockFunction', () => {
     expect(await mockFnAsync()).toBe('default');
     expect(await mockFnAsync()).toBe('default');
   });
+
+  it('should override the implementation temporarily', () => {
+    const mockFn = smock.fn((x: number) => 42 + x);
+
+    expect(mockFn(2)).toBe(44);
+
+    mockFn.withImplementation(
+      (x: number) => 42 - x,
+      () => expect(mockFn(2)).toBe(40),
+    );
+
+    expect(mockFn(2)).toBe(44);
+  });
 });
