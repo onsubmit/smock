@@ -91,14 +91,15 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
             ? implementation
             : (mockImplementations.shift() ?? mockImplementation ?? implementation)
         )?.(...args);
+        mock.returns.push(returnValue);
         result.type = 'success';
         result.value = returnValue;
       } catch (e: any) {
         result.type = 'exception';
         result.value = e;
+        throw e;
       }
 
-      mock.returns.push(returnValue);
       return returnValue;
     } as MockFunctionConstructor<TFunc>,
     {

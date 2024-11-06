@@ -8,6 +8,19 @@ describe('mockFunction', () => {
     expect(mockFn(1)).toBe(43);
   });
 
+  it('should execute a mocked function that throws', () => {
+    const mockDivideFn = smock.fn((numerator: number, denominator: number) => {
+      if (denominator === 0) {
+        throw new Error('Divide by zero');
+      }
+
+      return numerator / denominator;
+    });
+
+    expect(mockDivideFn(4, 2)).toBe(2);
+    expect(() => mockDivideFn(1, 0)).toThrowError('Divide by zero');
+  });
+
   it('should track calls and results', () => {
     const mockFn = smock.fn((x: number) => x * 2);
 
