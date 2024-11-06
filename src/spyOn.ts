@@ -1,14 +1,17 @@
-import { fn, Func } from './mockFunction.js';
+import { fn, Func, MockFunction, ObjectMethods } from './mockFunction.js';
 
 export interface SpyOnFunc {
   called: boolean;
 }
 
-export function spyOn<T, K extends keyof T>(object: T, method: K) {
-  const objectMethod = object[method];
+export function spyOn<T, M extends ObjectMethods<T>>(
+  object: T,
+  method: M,
+): T[M] extends Func ? MockFunction<T[M]> : never {
+  const objectMethod = object[method] as Func;
 
-  const mockFn = fn((objectMethod as Func).bind(object));
-  object[method] = mockFn as any;
+  const mockFn = fn(objectMethod.bind(object));
+  object[method] = mockFn as T[M];
 
-  return mockFn;
+  return mockFn as any;
 }

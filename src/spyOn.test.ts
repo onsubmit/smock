@@ -7,9 +7,13 @@ describe('spyOn', () => {
       getApples: () => 42,
     };
 
-    smock.spyOn(cart, 'getApples').mockImplementation(() => apples);
+    const spy = smock.spyOn(cart, 'getApples').mockImplementation(() => apples);
     apples = 1;
 
     expect(cart.getApples()).toBe(1);
+    expect(spy.mock.called).toBe(true);
+    expect(spy.mock.callCount).toBe(1);
+    expect(spy.mock.calls).toEqual([[]]);
+    expect(spy.mock.returns).toEqual([1]);
   });
 });
