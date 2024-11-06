@@ -10,6 +10,8 @@ export interface MockFunctionConstructor<TFunc extends Func = Func> {
   (...args: Parameters<TFunc>): ReturnType<TFunc>;
 }
 
+let sharedCallCount = 1;
+
 export interface MockFunction<TFunc extends Func = Func> extends MockFunctionConstructor<TFunc> {
   mock: {
     called: boolean;
@@ -17,6 +19,7 @@ export interface MockFunction<TFunc extends Func = Func> extends MockFunctionCon
     calls: Array<Parameters<TFunc>>;
     contexts: any[];
     instances: Array<MockFunction<TFunc>>;
+    invocationCallOrder: Array<number>;
     lastCall: Parameters<TFunc> | undefined;
     results: Array<MockResult<any>>;
     returns: Array<any>;
@@ -62,6 +65,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
     calls: [],
     contexts: [],
     instances: [],
+    invocationCallOrder: [],
     lastCall: undefined,
     results: [],
     returns: [],
@@ -76,6 +80,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
       mock.calls.push(args);
       mock.contexts.push(this);
       mock.instances.push(this as MockFunction<TFunc>);
+      mock.invocationCallOrder.push(sharedCallCount++);
       mock.lastCall = args;
       mock.results.push({
         type: 'incomplete',
@@ -119,6 +124,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
         mock.calls.length = 0;
         mock.contexts.length = 0;
         mock.instances.length = 0;
+        mock.invocationCallOrder.length = 0;
         mock.returns.length = 0;
 
         return mockFn;

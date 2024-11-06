@@ -8,6 +8,13 @@ describe('mockFunction', () => {
     expect(mockFn(1)).toBe(43);
   });
 
+  it('should execute a mocked function vitest', () => {
+    const mockFn = vi.fn((x: number) => 42 + x);
+
+    expect(mockFn(0)).toBe(42);
+    expect(mockFn(1)).toBe(43);
+  });
+
   it('should execute a mocked function that throws', () => {
     const mockDivideFn = smock.fn((numerator: number, denominator: number) => {
       if (denominator === 0) {
@@ -156,6 +163,21 @@ describe('mockFunction', () => {
       expect(mockFn.mock.contexts).toEqual([thisContext4, thisContext5, thisContext6]);
       expect(mockFn.mock.calls).toEqual([['bind'], ['call'], ['apply']]);
     }
+  });
+
+  it('should track invocation order', () => {
+    const fn1 = smock.fn();
+    const fn2 = smock.fn();
+
+    fn1();
+    fn2();
+    fn1();
+
+    expect(fn1.mock.invocationCallOrder).toHaveLength(2);
+    const first = fn1.mock.invocationCallOrder[0]!;
+    expect(first).toBeGreaterThan(0);
+    expect(fn1.mock.invocationCallOrder).toEqual([first, first + 2]);
+    expect(fn2.mock.invocationCallOrder).toEqual([first + 1]);
   });
 
   it('should override the implementation', () => {
