@@ -69,7 +69,7 @@ describe('mockFunction', () => {
       expect(mockFn.mock.called).toBe(true);
       expect(mockFn.mock.callCount).toBe(4);
       expect(mockFn.mock.calls).toEqual([[5], [6], [7], [8]]);
-      expect(mockFn.mock.returns).toEqual([10, 12, 14, 16]);
+      expect(mockFn.mock.returns).toEqual(f === 'mockClear' ? [10, 12, 14, 16] : Array(4));
     }
   });
 
@@ -207,8 +207,37 @@ describe('mockFunction', () => {
     expect(mockFn(2)).toBe(6);
 
     mockFn.mockReset();
-    expect(mockFn(1)).toBe(2);
-    expect(mockFn(2)).toBe(4);
+    expect(mockFn(1)).toBeUndefined();
+    expect(mockFn(2)).toBeUndefined();
+  });
+
+  it('should restore original implementation', () => {
+    const mockFn = smock.fn((x: number) => x * 2);
+
+    [1, 2].forEach((x) => mockFn(x));
+    expect(mockFn.mock.called).toBe(true);
+    expect(mockFn.mock.callCount).toBe(2);
+    expect(mockFn.mock.calls).toEqual([[1], [2]]);
+    expect(mockFn.mock.returns).toEqual([2, 4]);
+
+    mockFn.mockImplementation((x: number) => x * 3);
+    [3, 4].forEach((x) => mockFn(x));
+    expect(mockFn.mock.called).toBe(true);
+    expect(mockFn.mock.callCount).toBe(4);
+    expect(mockFn.mock.calls).toEqual([[1], [2], [3], [4]]);
+    expect(mockFn.mock.returns).toEqual([2, 4, 9, 12]);
+
+    mockFn.mockRestore();
+    expect(mockFn.mock.called).toBe(false);
+    expect(mockFn.mock.callCount).toBe(0);
+    expect(mockFn.mock.calls).toHaveLength(0);
+    expect(mockFn.mock.returns).toHaveLength(0);
+
+    [5, 6].forEach((x) => mockFn(x));
+    expect(mockFn.mock.called).toBe(true);
+    expect(mockFn.mock.callCount).toBe(2);
+    expect(mockFn.mock.calls).toEqual([[5], [6]]);
+    expect(mockFn.mock.returns).toEqual([10, 12]);
   });
 
   it('should override the implementation once', () => {
@@ -232,7 +261,7 @@ describe('mockFunction', () => {
     expect(mockFn()).toBe('1st');
 
     mockFn.mockReset();
-    expect(mockFn()).toBe('default');
+    expect(mockFn()).toBeUndefined();
   });
 
   it('should override the value', () => {

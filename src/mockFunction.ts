@@ -28,6 +28,7 @@ export interface MockFunction<TFunc extends Func = Func> extends MockFunctionCon
   mockImplementation: (fn: NormalizedFunc<TFunc>) => this;
   mockImplementationOnce: (fn: NormalizedFunc<TFunc>) => this;
   mockReset(): this;
+  mockRestore(): this;
   mockRejectedValue(value: any): this;
   mockRejectedValueOnce(value: any): this;
   mockReturnThis(): this;
@@ -53,8 +54,9 @@ export type MockResult<T> =
     };
 
 export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunction<TFunc> {
-  let _this: any;
-  let _tempOverride = false;
+  let self: any;
+  let tempImplementation: Func | undefined;
+  const originalImplementation = implementation;
 
   let mockImplementation: NormalizedFunc<TFunc> | undefined;
   const mockImplementations: Array<NormalizedFunc<TFunc> | undefined> = [];
@@ -75,7 +77,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
     function (this: any, ...args: Parameters<TFunc>) {
       const { mock } = mockFn;
 
-      _this = this;
+      self = this;
 
       mock.calls.push(args);
       mock.contexts.push(this);
@@ -92,9 +94,10 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
       let returnValue: any;
       try {
         returnValue = (
-          _tempOverride
-            ? implementation
-            : (mockImplementations.shift() ?? mockImplementation ?? implementation)
+          tempImplementation ??
+          mockImplementations.shift() ??
+          mockImplementation ??
+          implementation
         )?.(...args);
         mock.returns.push(returnValue);
         result.type = 'success';
@@ -121,6 +124,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
       mockClear: () => {
         const { mock } = mockFn;
 
+        tempImplementation = undefined;
         mock.calls.length = 0;
         mock.contexts.length = 0;
         mock.instances.length = 0;
@@ -138,10 +142,16 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
         return mockFn;
       },
       mockReset: () => {
+        implementation = undefined;
         mockImplementation = undefined;
         mockImplementations.length = 0;
 
         return mockFn.mockClear();
+      },
+      mockRestore: () => {
+        mockFn.mockReset();
+        implementation = originalImplementation;
+        return mockFn;
       },
       mockRejectedValue(value: any): MockFunction<TFunc> {
         mockFn.mockImplementation(() => Promise.reject(value) as any);
@@ -151,7 +161,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
         mockFn.mockImplementationOnce(() => Promise.reject(value) as any);
         return mockFn;
       },
-      mockReturnThis: () => mockFn.mockImplementation(() => _this),
+      mockReturnThis: () => mockFn.mockImplementation(() => self),
       mockReturnValue: (value: ReturnType<TFunc>) => mockFn.mockImplementation(() => value),
       mockReturnValueOnce: (value: ReturnType<TFunc>) => mockFn.mockImplementationOnce(() => value),
       mockResolvedValue: (value: Awaited<ReturnType<TFunc>>) =>
@@ -159,14 +169,11 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
       mockResolvedValueOnce: (value: Awaited<ReturnType<TFunc>>) =>
         mockFn.mockImplementationOnce(() => Promise.resolve(value) as any),
       withImplementation: (fn: TFunc, callback: Func) => {
-        const originalImplementation = implementation;
-        _tempOverride = true;
-        implementation = fn;
+        tempImplementation = fn;
 
         callback();
 
-        implementation = originalImplementation;
-        _tempOverride = false;
+        tempImplementation = undefined;
         return mockFn;
       },
     },
