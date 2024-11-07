@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export type Func = ((...args: any[]) => any) & Function;
+export type Func = (...args: any[]) => any;
 export type NormalizedFunc<T extends Func> = (...args: Parameters<T>) => ReturnType<T>;
 export type ObjectMethods<T> = keyof {
   [K in keyof T as T[K] extends Func ? K : never]: T[K];
