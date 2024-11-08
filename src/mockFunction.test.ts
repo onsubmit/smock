@@ -51,6 +51,42 @@ describe('mockFunction', () => {
     expect(mockFn.mock.returns).toEqual([2, 4, 6, 8]);
   });
 
+  it('should track resolved results', async () => {
+    const mockFn = smock.fn().mockResolvedValueOnce('result');
+
+    const result = mockFn();
+    expect(result).toBeInstanceOf(Promise);
+    expect(mockFn.mock.settledResults).toEqual([]);
+
+    const resolvedValue = await result;
+
+    expect(resolvedValue).toBe('result');
+    expect(mockFn.mock.settledResults).toEqual([
+      {
+        type: 'resolved',
+        value: 'result',
+      },
+    ]);
+  });
+
+  it('should track rejected results', () => {
+    const mockFn = smock.fn().mockRejectedValueOnce('error');
+
+    const result = mockFn();
+    expect(result).toBeInstanceOf(Promise);
+    expect(mockFn.mock.settledResults).toEqual([]);
+
+    result.catch((e: string) => {
+      expect(e).toEqual('error');
+      expect(mockFn.mock.settledResults).toEqual([
+        {
+          type: 'rejected',
+          value: 'error',
+        },
+      ]);
+    });
+  });
+
   it('should clear/reset calls and results', () => {
     for (const f of ['mockClear', 'mockReset'] as const) {
       const mockFn = smock.fn((x: number) => x * 2);

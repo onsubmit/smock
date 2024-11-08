@@ -21,7 +21,10 @@ export interface MockFunction<TFunc extends Func = Func> extends MockFunctionCon
     invocationCallOrder: Array<number>;
     lastCall: Parameters<TFunc> | undefined;
     results: Array<MockResult<any>>;
-    returns: Array<any>;
+    returns: Array<ReturnType<TFunc>>;
+    settledResults: ReturnType<TFunc> extends PromiseLike<infer R>
+      ? Array<{ type: 'resolved' | 'rejected'; value: R }>
+      : never;
   };
   mockClear(): this;
   mockImplementation: (fn: NormalizedFunc<TFunc>) => this;
@@ -68,6 +71,7 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
     instances: [],
     invocationCallOrder: [],
     lastCall: undefined,
+    settledResults: [] as any,
     results: [],
     returns: [],
   };
@@ -105,6 +109,13 @@ export function fn<TFunc extends Func = Func>(implementation?: TFunc): MockFunct
         result.type = 'exception';
         result.value = e;
         throw e;
+      }
+
+      if (returnValue instanceof Promise) {
+        returnValue.then(
+          (r: any) => mock.settledResults.push({ type: 'resolved', value: r }),
+          (e: any) => mock.settledResults.push({ type: 'rejected', value: e }),
+        );
       }
 
       return returnValue;
